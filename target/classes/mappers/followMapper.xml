@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.zerock.mapper.FollowMapper">
+
+<insert id="add_follow">
+	insert into tbl_follow (following, follower) values (#{following_num}, #{follower_num})
+</insert>
+
+<insert id="minus_follow">
+	delete from tbl_follow where following = #{following_num} and follower = #{follower_num}
+</insert>
+
+<select id="follow_check" resultType="Integer">
+		<![CDATA[
+		select count(follow_check) from tbl_follow where following = #{following_num} and follower = #{follower_num}  
+ 		]]>
+</select>
+
+<select id="following_check" resultType="Integer">
+		<![CDATA[
+		select count(*) from tbl_follow where following = #{id} and follower = #{id2}  
+ 		]]>
+</select>
+
+<select id="follower_list" resultType="FollowVO">
+		select follower from tbl_follow where following = #{id} 
+</select>
+
+<select id="following_list" resultType="FollowVO">
+		select following from tbl_follow where follower = #{id} 
+</select>
+
+</mapper>

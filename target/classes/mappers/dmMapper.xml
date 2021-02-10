@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.zerock.mapper.DmMapper">
+
+<insert id="addDm">
+	insert into tbl_dm (from_id, to_id) values (#{from_id}, #{to_id})
+</insert>
+
+
+<!-- DM 눌렀을 때 팔로잉 목록 출력 -->
+<select id="following_list" resultType="DmVO">
+	select to_id from tbl_dm where from_id = #{from_id} and to_id != "" and context is null
+</select>
+
+<select id="following_list_count" resultType="Integer">
+	select count(*) from tbl_dm where from_id = #{from_id} and to_id = #{to_id}
+</select>
+
+<!-- DM 전체 내용 출력, 시간 등 -->
+<select id="context_all" resultType="DmVO">
+	select * from tbl_dm where from_id = #{from_id} and to_id = #{to_id} or from_id = #{to_id} and to_id = #{from_id} order by dno asc 
+</select>
+
+<insert id="send">
+	insert into tbl_dm (from_id, to_id, context) values (#{from_id}, #{to_id}, #{context})
+</insert>
+
+</mapper>

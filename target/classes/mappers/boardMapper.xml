@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.zerock.mapper.BoardMapper">
+
+	<insert id="create">
+		insert into tbl_board(title,content,writer,header,src) 
+		values(#{title},#{content},#{writer},#{header},#{src})
+	</insert>
+	
+	<insert id="addAttach">
+		insert into tbl_attach (fullName, bno) values (#{fullName},LAST_INSERT_ID())
+	</insert>
+	
+	<select id="listAll" resultType="BoardVO">
+		select * from tbl_board order by bno desc;
+	</select>
+	
+	<select id="read" resultType="BoardVO">
+		<![CDATA[
+		select * from tbl_board where bno = #{bno};
+		]]>
+	</select>
+	
+	<delete id="delete">
+		delete from tbl_board where bno=#{bno}
+	</delete>
+	
+	<update id="update">
+		update tbl_board set title=#{title},content=#{content},header=#{header},src=#{src} where bno=#{bno}
+	</update>
+	
+	<select id="listPage" resultType="BoardVO">
+		<![CDATA[
+		select * from tbl_board 
+		where bno > 0 order by bno desc, regdate desc limit #{page}, 10
+		]]>  
+	</select>
+	
+	<select id="listCriteria" resultType="BoardVO">
+		<![CDATA[
+		select * from tbl_board 
+		where bno > 0 order by bno desc, regdate desc 
+		limit #{pageStart}, #{perPageNum}
+ 		]]>  
+	</select>
+	
+	<select id="countPaging" resultType="int">
+		<![CDATA[
+		select count(bno) from tbl_board where bno > 0 
+ 		]]>
+	</select>
+	
+	<select id="listSearch" resultType="BoardVO">
+		<![CDATA[
+		select * from tbl_board where bno > 0 
+ 		]]>
+		<include refid="search"></include>
+ 		<![CDATA[
+		order by bno desc, regdate desc limit #{pageStart}, #{perPageNum}
+ 		]]>
+	</select>
+	
+	<select id="listBest" resultType="BoardVO">
+		<![CDATA[
+		select * from tbl_board where bno > 0 and like_cnt > hate_cnt
+ 		]]>
+		<include refid="search"></include>
+ 		<![CDATA[
+		order by like_cnt desc, regdate desc limit 0,3
+ 		]]>
+	</select>
+
+	<select id="listSearchCount" resultType="int">
+		<![CDATA[
+		select count(bno) from tbl_board where bno > 0 
+ 		]]>  
+ 		<include refid="search"></include>
+	</select>
+	
+	<select id="post_count" resultType="Integer">
+		select count(writer) from tbl_board where writer = #{id}
+	</select>
+	
+	<update id="updateViewCnt">
+
+		update tbl_board set viewcnt = viewcnt + 1 where bno = #{bno}
+
+	</update>
+	
+	<update id="addLikeCnt">
+
+		update tbl_board set like_cnt = like_cnt + 1 where bno = #{bno}
+
+	</update>
+	
+	<update id="addHateCnt">
+
+		update tbl_board set hate_cnt = hate_cnt + 1 where bno = #{bno}
+
+	</update>
+	
+ 	<sql id="search">
+		<if test="searchType != null" >
+			<!-- 
+			MyBatis에서는 변수가 자바객체처럼 사용되므로 
+			( OGNL (Object Graph Navigation Language)를 사용하여 속성 처리를 하고 있기 때문에)
+			자바에서 사용되는 문자열 비교 메소드를 이용하면 된다.
+			단 비교할 문자를 먼저 쓴 경우도 에러 발생.
+			<if test="searchType == 't'.toString()"> (o)
+			<if test="searchType eq 't'.toString()"> (o)
+			<if test="searchType.toString() == 't'.toString()"> (o)
+			<if test="searchType.equalsIgnoreCase('t')"> (o)
+			<if test='searchType == "t"'> (o)
+	
+			// 작은, 큰 따옴표 순서
+			<if test='"t".equals(searchType)'> (o)
+			<if test="'t'.equals(searchType)"> (x)
+			<if test='searchType.equals("t")'> (o)
+			<if test="searchType.equals('t')"> (x)
+			-->
+			<if test="searchType == 't'.toString()">
+				and title like CONCAT('%', #{keyword}, '%')
+			</if>
+			<if test="searchType == 'c'.toString()">
+				and content like CONCAT('%', #{keyword}, '%')
+			</if>
+			<if test="searchType == 'w'.toString()">
+				and writer like CONCAT('%', #{keyword}, '%')
+			</if>     
+			<if test="searchType == 'tc'.toString()">
+				and ( title like CONCAT('%', #{keyword}, '%') OR content like CONCAT('%', #{keyword}, '%'))
+			</if>        
+			<if test="searchType == 'cw'.toString()">
+				and ( content like CONCAT('%', #{keyword}, '%') OR writer like CONCAT('%', #{keyword}, '%'))
+			</if>        
+			<if test="searchType == 'tcw'.toString()">
+				and 
+				( title like CONCAT('%', #{keyword}, '%') 
+				OR content like CONCAT('%', #{keyword}, '%') 
+				OR writer like CONCAT('%', #{keyword}, '%'))
+			</if>              
+		</if>
+	</sql>
+</mapper>

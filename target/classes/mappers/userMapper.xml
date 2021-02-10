@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.zerock.mapper.UserMapper">
+	
+	<select id="getTime" resultType="string">
+		select now()
+	</select>
+	<!-- 매퍼와 VO 변수 반드시 매칭 -->
+	<insert id="join">
+		insert into tbl_member (userid, userpw, username, email) values 
+		(#{userid},#{userpw},#{username},#{email})
+	</insert>
+	<select id="login" resultType="UserVO">
+		select * from tbl_member where userid = #{userid} and userpw = #{userpw}
+	</select>
+	<select id="idChk" resultType="int">
+		select count(*) from tbl_member where userid = #{userid}
+	</select>
+	
+	<select id="idFind" resultType="String">
+		select userid from tbl_member where username = #{username} and email = #{email}
+	</select>
+	
+	<select id="passFind" resultType="String">
+		select userpw from tbl_member where userid = #{userid} and email = #{email2}
+	</select>
+	
+	<select id="read" resultType="org.zerock.domain.UserVO">
+		<![CDATA[
+		select * from tbl_member where userid = #{id};
+		]]>
+	</select>
+	
+	<!-- 팔로우 : 팔로워 증가 -->
+	<update id="updateFollowerNum">
+		update tbl_member set follower_num = follower_num + 1 where userid=#{following_num}
+	</update>
+	
+	<!-- 팔로우 : 팔로잉 증가 -->
+	<update id="updateFollowingNum">
+		update tbl_member set following_num = following_num + 1 where userid=#{follower_num}
+	</update>
+	
+	<!-- 언팔로우 : 팔로워 감소 -->
+	<update id="minusFollowerNum">
+		update tbl_member set follower_num = follower_num - 1 where userid=#{following_num}
+	</update>
+	
+	<!-- 언팔로우 : 팔로잉 감소 -->
+	<update id="minusFollowingNum">
+		update tbl_member set following_num = following_num - 1 where userid=#{follower_num}
+	</update>
+	
+	<!-- 회원수정 클릭 -->
+	<update id="modify">
+		update tbl_member set profile = #{profile} where userid = #{userid}
+	</update>
+	
+	<!-- 프로필 사진 가져오기 -->
+	<select id="getProfile" resultType="String">
+		select profile from tbl_member where userid = #{id};
+	</select>
+	
+	<!-- 다른 사람 프로필 사진 가져오기 -->
+	<select id="getProfileOther" resultType="String">
+		select profile from tbl_member where userid = #{id};
+	</select>
+	
+	<!-- 회원 정보 가져오기 -->
+	<select id="userInfo" resultType="UserVO">
+		select * from tbl_member where userid = #{id}
+	</select>
+	
+	<!-- 회원인지 비회원인지 -->
+	<select id="is_member" resultType="Integer">
+		select count(*) from tbl_member where userid = #{id}
+	</select>
+</mapper>

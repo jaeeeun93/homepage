@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+
+<mapper namespace="org.zerock.mapper.LikeMapper">
+
+	<insert id="create">
+		insert into tbl_like (userid, bno, likeno, duple_check) values (#{userid}, #{bno}, #{likeno}, 1)
+	</insert>
+	
+	<select id="like_check" resultType="Integer">
+		<![CDATA[
+		select count(like_check) from tbl_like where userid = #{userid} and bno = #{bno}  
+ 		]]>
+	</select>
+	
+	<select id="hate_check" resultType="Integer">
+		<![CDATA[
+		select count(hate_check) from tbl_like where userid = #{userid} and bno = #{bno}  
+ 		]]>
+	</select>
+	
+	<select id="duple_check" resultType="Integer">
+		<![CDATA[
+		select count(duple_check) from tbl_like where userid = #{userid} and bno = #{bno}  
+ 		]]>
+	</select>
+	
+	<update id="addLikeCheck">
+		update tbl_like set like_check=1 where userid=#{userid} and bno = #{bno}
+	</update>
+
+	<update id="addHateCheck">
+		update tbl_like set hate_check=1 where userid=#{userid} and bno = #{bno}
+	</update>
+	
+	<select id="read_like" resultType="ReplyVO">
+		<![CDATA[
+		select * from tbl_like where userid = #{id} order by regdate desc limit #{pageStart}, #{perPageNum};
+		]]>
+	</select>
+</mapper>
